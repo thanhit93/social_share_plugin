@@ -200,7 +200,7 @@ import 'package:social_share_plugin/social_share_plugin.dart';
 
 Future<void> errorShareCallback(String message) async {
     print(message);
-  }
+}
 
 await SocialSharePlugin.shareMessageToZalo(url: url, onError: errorShareCallback);
 ```
