@@ -28,6 +28,16 @@ Once you have the Facebook App ID figured out, you'll have to do two things.
 
 First, copy-paste the following to your strings resource file. If you don't have one, just create it.
 
+**\<your project root\>/android/app/build.gradle**
+
+```xml
+dependencies {
+   ...
+   implementation "com.zing.zalo.zalosdk:auth:+"
+   ...
+}
+```
+
 **\<your project root\>/android/app/src/main/res/values/strings.xml**
 
 ```xml
@@ -37,6 +47,9 @@ First, copy-paste the following to your strings resource file. If you don't have
 
     <!-- Replace "000000000000" with your Facebook App ID here. -->
     <string name="facebook_app_id">000000000000</string>
+    
+    <!-- Replace "{"appID"}" with your ZALO App ID here. -->
+    <string name="appZaloID">{"appID"}</string>
 </resources>
 ```
 
@@ -55,6 +68,11 @@ Then you'll just have to copy-paste the following to your _Android Manifest_ and
     android:configChanges=
             "keyboard|keyboardHidden|screenLayout|screenSize|orientation"
     android:label="@string/app_name" />
+
+<activity android:name="com.zing.zalo.zalosdk.oauth.OpenAPIActivity" />
+      <meta-data
+          android:name="com.zing.zalo.zalosdk.appID"
+          android:value="@string/appZaloID" />
     
 <provider android:authorities="com.facebook.app.FacebookContentProvider{FACEBOOK_APP_ID}"
             android:name="com.facebook.FacebookContentProvider"
@@ -68,6 +86,33 @@ Then you'll just have to copy-paste the following to your _Android Manifest_ and
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/provider_paths"/>
         </provider>
+```
+
+**\<your project root\>/android/app/src/main/java/..../MainApplication.java**
+
+```xml
+import com.zing.zalo.zalosdk.oauth.ZaloSDKApplication;
+    ...
+    @Override
+    public void onCreate() {
+        ...
+        ZaloSDKApplication.wrap(this);
+        ...
+}
+```
+
+**OR <your project root\>/android/app/src/main/kotlin/..../MainApplication.kt**
+
+```xml
+import com.zing.zalo.zalosdk.oauth.ZaloSDKApplication
+    ...
+    override fun onCreate() {
+        super.onCreate()
+        ...
+        ZaloSDKApplication.wrap(this)
+        ...
+    }
+}
 ```
 
 Done!
