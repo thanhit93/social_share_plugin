@@ -199,7 +199,7 @@ await SocialSharePlugin.shareToTwitterLink(text: 'text', url: 'https://flutter.d
 import 'package:social_share_plugin/social_share_plugin.dart';
 
 Future<void> errorShareCallback(String message) async {
-    Utils.showToaster(message);
+    print(message);
   }
 
 await SocialSharePlugin.shareMessageToZalo(url: url, onError: errorShareCallback);
