@@ -17,7 +17,7 @@ Social Share to Facebook and Intagram Flutter plugin.
   s.dependency 'Flutter'
   s.dependency 'FBSDKCoreKit'
   s.dependency 'FBSDKShareKit'
-
+  s.dependency "ZaloSDK", '~> 2.5.0220.1'
 
   s.ios.deployment_target = '9.0'
 end
