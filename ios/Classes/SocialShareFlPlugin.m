@@ -2,6 +2,7 @@
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKShareKit/FBSDKShareKit.h>
 //#import <TwitterKit/TWTRKit.h>
+#import <ZaloSDK/ZaloSDK.h>
 
 @implementation SocialShareFlPlugin {
     FlutterMethodChannel* _channel;
@@ -117,6 +118,49 @@
           }
           result(false);
       }
+  } else if ([@"shareMessageToZalo" isEqualToString:call.method]) {
+      dispatch_async(dispatch_get_main_queue(), ^{
+          NSString *urlString = @"zalo://";
+          NSURL *url = [NSURL URLWithString:urlString];
+          if ([[UIApplication sharedApplication] canOpenURL:url]) {
+              // app da install
+              NSString *msg = call.arguments[@"msg"];
+              NSString *link = call.arguments[@"link"];
+              NSString *linkTitle = call.arguments[@"linkTitle"];
+              NSString *linkSource = call.arguments[@"linkSource"];
+              NSString *linkThumb = call.arguments[@"linkThumb"];
+              NSString *appName = call.arguments[@"appName"];
+              
+              ZOFeed *feed = [
+                               [ZOFeed alloc]
+                               initWithLink:link
+                               appName: appName
+                               message: msg
+                               others: nil
+                               ];
+              feed.linkTitle = linkTitle;
+              feed.linkSource = linkSource;
+              feed.linkThumb = @[linkThumb];
+              
+              UIViewController *navigationController = [UIViewController self];
+              
+              [[ZaloSDK sharedInstance] sendMessage: feed
+                                       inController:navigationController
+                                           callback:^(ZOShareResponseObject *response)
+               {
+                  NSLog(@"%@", response.message);
+                  if (response.isSucess) {
+                      [self->_channel invokeMethod:@"onSuccess" arguments:nil];
+                  } else {
+                      NSError* error = nil;
+                      [self->_channel invokeMethod:@"onError" arguments:@"app_not_share"];
+                  }
+              }];
+          }
+          else {
+              [self->_channel invokeMethod:@"onError" arguments:@"app_not_install"];
+          }
+      });
   } else {
     result(FlutterMethodNotImplemented);
   }
