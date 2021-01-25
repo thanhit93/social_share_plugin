@@ -23,6 +23,6 @@ flutter:
     platforms:
       android:
         package: com.cygnati.social_share_plugin
-        pluginClass: SocialShareFlPlugin
+        pluginClass: SocialSharePlugin
       ios:
         pluginClass: SocialShareFlPlugin
