@@ -1,9 +1,9 @@
-#import "SocialSharePlugin.h"
+#import "SocialShareFlPlugin.h"
 #import <FBSDKCoreKit/FBSDKCoreKit.h>
 #import <FBSDKShareKit/FBSDKShareKit.h>
 //#import <TwitterKit/TWTRKit.h>
 
-@implementation SocialSharePlugin {
+@implementation SocialShareFlPlugin {
     FlutterMethodChannel* _channel;
     UIDocumentInteractionController* _dic;
     FlutterResult _result;
@@ -13,7 +13,7 @@
   FlutterMethodChannel* channel = [FlutterMethodChannel
       methodChannelWithName:@"social_share_plugin"
             binaryMessenger:[registrar messenger]];
-  SocialSharePlugin* instance = [[SocialSharePlugin alloc] initWithChannel:channel];
+  SocialShareFlPlugin* instance = [[SocialShareFlPlugin alloc] initWithChannel:channel];
   [registrar addApplicationDelegate:instance];
   [registrar addMethodCallDelegate:instance channel:channel];
 }
