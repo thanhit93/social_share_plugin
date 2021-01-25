@@ -21,6 +21,7 @@ import com.facebook.share.model.SharePhotoContent;
 import com.facebook.share.widget.ShareDialog;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
 
 import io.flutter.embedding.engine.plugins.FlutterPlugin;
@@ -35,6 +36,9 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+import com.zing.zalo.zalosdk.oauth.FeedData;
+import com.zing.zalo.zalosdk.oauth.OpenAPIService;
+import com.zing.zalo.zalosdk.oauth.ZaloPluginCallback;
 
 /**
  * SocialSharePlugin
@@ -44,6 +48,8 @@ public class SocialSharePlugin
     private final static String INSTAGRAM_PACKAGE_NAME = "com.instagram.android";
     private final static String FACEBOOK_PACKAGE_NAME = "com.facebook.katana";
     private final static String TWITTER_PACKAGE_NAME = "com.twitter.android";
+    private final static String ZALO_PACKAGE_NAME = "com.zing.zalo";
+    private static final String TAG = "ZaloShare";
 
     private final static int TWITTER_REQUEST_CODE = 0xc0ce;
     private final static int INSTAGRAM_REQUEST_CODE = 0xc0c3;
@@ -174,6 +180,24 @@ public class SocialSharePlugin
                     result.success(false);
                 }
                 break;
+            case "shareMessageToZalo":
+                try {
+                    shareMessageZalo((HashMap<String, String>) call.arguments);
+                    result.success(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    result.success(false);
+                }
+                break;
+            case "shareFeedToZalo":
+                try {
+                    shareFeedZalo((HashMap<String, String>) call.arguments);
+                    result.success(true);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    result.success(false);
+                }
+                break;
             default:
                 result.notImplemented();
                 break;
@@ -279,5 +303,103 @@ public class SocialSharePlugin
         final String tweetUrl = String.format("https://twitter.com/intent/tweet?text=%s&url=%s", text, url);
         final Uri uri = Uri.parse(tweetUrl);
         activity.startActivityForResult(new Intent(Intent.ACTION_VIEW, uri), TWITTER_REQUEST_CODE);
+    }
+
+    private void shareMessageZalo(HashMap<String, String> config) {
+        Log.d("shareMessage", config.toString());
+        boolean isAppInstall = this.checkZaloAppInstall();
+        if(isAppInstall){
+            try {
+
+                FeedData feed = this.getFeedData(config);
+                ZaloPluginCallback mcalCallback = new ZaloPluginCallback() {
+                    @Override
+                    public void onResult(boolean success, int i, String str, String str2) {
+                        if(success) {
+                            channel.invokeMethod("onSuccess", null);
+                        } else {
+                            channel.invokeMethod("onError",  "app_not_share");
+                        }
+                    }
+                };
+
+                OpenAPIService.getInstance().shareMessage(
+                        activity,
+                        feed,
+                        mcalCallback,
+                        true
+                );
+                channel.invokeMethod("onSuccess", null);
+            } catch (Exception e) {
+                channel.invokeMethod("onError", e.getMessage());
+
+            }
+        } else {
+            Log.d("SocialSharePlugin", "app_not_install");
+            channel.invokeMethod("onError", "app_not_install");
+        }
+    }
+
+    private void shareFeedZalo(HashMap<String, String> config) {
+        boolean isAppInstall = this.checkZaloAppInstall();
+        if(isAppInstall){
+            try {
+
+                FeedData feed = this.getFeedData(config);
+
+                ZaloPluginCallback mcalCallback = new ZaloPluginCallback() {
+                    @Override
+                    public void onResult(boolean success, int i, String str, String str2) {
+                        if(success) {
+                            channel.invokeMethod("onSuccess", null);
+                        } else {
+                            channel.invokeMethod("onError",  "app_not_share");
+                        }
+                    }
+                };
+
+                OpenAPIService.getInstance().shareFeed(
+                        activity,
+                        feed,
+                        mcalCallback,
+                        true
+                );
+
+                channel.invokeMethod("onSuccess", null);
+            } catch (Exception e) {
+                channel.invokeMethod("onError", e.getMessage());
+            }
+        } else {
+            Log.d("SocialSharePlugin", "app_not_install");
+            channel.invokeMethod("onError", "app_not_install");
+        }
+    }
+
+    private boolean checkZaloAppInstall() {
+        PackageManager pm = activity.getApplicationContext().getPackageManager();
+        try {
+            pm.getPackageInfo(ZALO_PACKAGE_NAME, PackageManager.GET_ACTIVITIES);
+            Log.d( TAG, String.valueOf(pm.getPackageInfo(ZALO_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    private FeedData getFeedData(HashMap<String, String> config) {
+        String msg = config.get("msg");
+        String link = config.get("link");
+        String linkSource = config.get("linkSource");
+        String linkTitle = config.get("linkTitle");
+        String linkThumb = config.get("linkThumb");
+
+        FeedData feed = new FeedData();
+        feed.setMsg(msg);
+        feed.setLink(link);
+        feed.setLinkTitle(linkTitle);
+        feed.setLinkSource(linkSource);
+        feed.setLinkThumb(new String[] { linkThumb });
+
+        return feed;
     }
 }
