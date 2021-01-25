@@ -36,6 +36,7 @@ import io.flutter.plugin.common.PluginRegistry.Registrar;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
+
 import com.zing.zalo.zalosdk.oauth.FeedData;
 import com.zing.zalo.zalosdk.oauth.OpenAPIService;
 import com.zing.zalo.zalosdk.oauth.ZaloPluginCallback;
@@ -308,28 +309,33 @@ public class SocialSharePlugin
     private void shareMessageZalo(HashMap<String, String> config) {
         Log.d("shareMessage", config.toString());
         boolean isAppInstall = this.checkZaloAppInstall();
-        if(isAppInstall){
+        if (isAppInstall) {
             try {
-
-                FeedData feed = this.getFeedData(config);
-                ZaloPluginCallback mcalCallback = new ZaloPluginCallback() {
+                final FeedData feed = this.getFeedData(config);
+                activity.runOnUiThread(new Runnable() {
                     @Override
-                    public void onResult(boolean success, int i, String str, String str2) {
-                        if(success) {
-                            channel.invokeMethod("onSuccess", null);
-                        } else {
-                            channel.invokeMethod("onError",  "app_not_share");
-                        }
-                    }
-                };
+                    public void run() {
 
-                OpenAPIService.getInstance().shareMessage(
-                        activity,
-                        feed,
-                        mcalCallback,
-                        true
-                );
-                channel.invokeMethod("onSuccess", null);
+                        ZaloPluginCallback mcalCallback = new ZaloPluginCallback() {
+                            @Override
+                            public void onResult(boolean success, int i, String str, String str2) {
+                                if (success) {
+                                    channel.invokeMethod("onSuccess", null);
+                                } else {
+                                    channel.invokeMethod("onError", "app_not_share");
+                                }
+                            }
+                        };
+
+                        OpenAPIService.getInstance().shareMessage(
+                                activity,
+                                feed,
+                                mcalCallback,
+                                true
+                        );
+                        channel.invokeMethod("onSuccess", null);
+                    }
+                });
             } catch (Exception e) {
                 channel.invokeMethod("onError", e.getMessage());
 
@@ -343,30 +349,35 @@ public class SocialSharePlugin
 
     private void shareFeedZalo(HashMap<String, String> config) {
         boolean isAppInstall = this.checkZaloAppInstall();
-        if(isAppInstall){
+        if (isAppInstall) {
             try {
 
-                FeedData feed = this.getFeedData(config);
-
-                ZaloPluginCallback mcalCallback = new ZaloPluginCallback() {
+                final FeedData feed = this.getFeedData(config);
+                activity.runOnUiThread(new Runnable() {
                     @Override
-                    public void onResult(boolean success, int i, String str, String str2) {
-                        if(success) {
-                            channel.invokeMethod("onSuccess", null);
-                        } else {
-                            channel.invokeMethod("onError",  "app_not_share");
-                        }
+                    public void run() {
+
+                        ZaloPluginCallback mcalCallback = new ZaloPluginCallback() {
+                            @Override
+                            public void onResult(boolean success, int i, String str, String str2) {
+                                if (success) {
+                                    channel.invokeMethod("onSuccess", null);
+                                } else {
+                                    channel.invokeMethod("onError", "app_not_share");
+                                }
+                            }
+                        };
+
+                        OpenAPIService.getInstance().shareFeed(
+                                activity,
+                                feed,
+                                mcalCallback,
+                                true
+                        );
+
+                        channel.invokeMethod("onSuccess", null);
                     }
-                };
-
-                OpenAPIService.getInstance().shareFeed(
-                        activity,
-                        feed,
-                        mcalCallback,
-                        true
-                );
-
-                channel.invokeMethod("onSuccess", null);
+                });
             } catch (Exception e) {
                 channel.invokeMethod("onError", e.getMessage());
             }
@@ -381,7 +392,7 @@ public class SocialSharePlugin
         PackageManager pm = activity.getApplicationContext().getPackageManager();
         try {
             pm.getPackageInfo(ZALO_PACKAGE_NAME, PackageManager.GET_ACTIVITIES);
-            Log.d( TAG, String.valueOf(pm.getPackageInfo(ZALO_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)));
+            Log.d(TAG, String.valueOf(pm.getPackageInfo(ZALO_PACKAGE_NAME, PackageManager.GET_ACTIVITIES)));
             return true;
         } catch (Exception e) {
             return false;
@@ -400,7 +411,7 @@ public class SocialSharePlugin
         feed.setLink(link);
         feed.setLinkTitle(linkTitle);
         feed.setLinkSource(linkSource);
-        feed.setLinkThumb(new String[] { linkThumb });
+        feed.setLinkThumb(new String[]{linkThumb});
 
         return feed;
     }
