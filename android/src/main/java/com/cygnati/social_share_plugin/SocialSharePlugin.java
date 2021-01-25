@@ -337,6 +337,7 @@ public class SocialSharePlugin
         } else {
             Log.d("SocialSharePlugin", "app_not_install");
             channel.invokeMethod("onError", "app_not_install");
+            openPlayStore(ZALO_PACKAGE_NAME);
         }
     }
 
@@ -372,6 +373,7 @@ public class SocialSharePlugin
         } else {
             Log.d("SocialSharePlugin", "app_not_install");
             channel.invokeMethod("onError", "app_not_install");
+            openPlayStore(ZALO_PACKAGE_NAME);
         }
     }
 
