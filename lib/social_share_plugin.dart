@@ -109,4 +109,67 @@ class SocialSharePlugin {
       'url': url,
     });
   }
+
+  static Future<dynamic> shareMessageToZalo({
+    String msg,
+    @required String url,
+    String linkSource,
+    String linkTitle,
+    String linkThumb,
+    OnSuccessHandler onSuccess,
+    OnCancelHandler onCancel,
+    OnErrorHandler onError,
+  }) async {
+    _channel.setMethodCallHandler((call) {
+      switch (call.method) {
+        case "onSuccess":
+          return onSuccess(call.arguments);
+        case "onCancel":
+          return onCancel();
+        case "onError":
+          return onError(call.arguments);
+        default:
+          throw UnsupportedError("Unknown method called");
+      }
+    });
+    return _channel.invokeMethod('shareMessageToZalo', <String, dynamic>{
+      'msg': msg,
+      'link': url,
+      'linkSource': linkSource,
+      'linkTitle': linkTitle,
+      'linkThumb': linkThumb,
+    });
+  }
+
+
+  static Future<dynamic> shareFeedToZalo({
+    String msg,
+    @required String url,
+    String linkSource,
+    String linkTitle,
+    String linkThumb,
+    OnSuccessHandler onSuccess,
+    OnCancelHandler onCancel,
+    OnErrorHandler onError,
+  }) async {
+    _channel.setMethodCallHandler((call) {
+      switch (call.method) {
+        case "onSuccess":
+          return onSuccess(call.arguments);
+        case "onCancel":
+          return onCancel();
+        case "onError":
+          return onError(call.arguments);
+        default:
+          throw UnsupportedError("Unknown method called");
+      }
+    });
+    return _channel.invokeMethod('shareFeedToZalo', <String, dynamic>{
+      'msg': msg,
+      'link': url,
+      'linkSource': linkSource,
+      'linkTitle': linkTitle,
+      'linkThumb': linkThumb,
+    });
+  }
 }
