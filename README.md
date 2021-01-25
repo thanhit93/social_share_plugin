@@ -188,9 +188,8 @@ Once you have the Facebook App ID figured out, then you'll just have to copy-pas
             sourceApplication:nil
             annotation:nil
           ];
-}
+     }
    ```
-   
    ```
  - **add URL Type**
     Main target setting -> info -> URL types -> click +
@@ -199,7 +198,6 @@ Once you have the Facebook App ID figured out, then you'll just have to copy-pas
  - **add Schemes LSApplicationQueriesSchemes Info.plist**
     Info.plist -> + LSApplicationQueriesSchemes -> item -> "zalo"
     ```
-
 Done!
 
 ## How do I use it?
