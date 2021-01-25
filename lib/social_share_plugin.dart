@@ -116,6 +116,7 @@ class SocialSharePlugin {
     String linkSource,
     String linkTitle,
     String linkThumb,
+    String appName,
     OnSuccessHandler onSuccess,
     OnCancelHandler onCancel,
     OnErrorHandler onError,
@@ -138,6 +139,7 @@ class SocialSharePlugin {
       'linkSource': linkSource,
       'linkTitle': linkTitle,
       'linkThumb': linkThumb,
+      'appName': appName,
     });
   }
 
@@ -148,6 +150,7 @@ class SocialSharePlugin {
     String linkSource,
     String linkTitle,
     String linkThumb,
+    String appName,
     OnSuccessHandler onSuccess,
     OnCancelHandler onCancel,
     OnErrorHandler onError,
@@ -170,6 +173,7 @@ class SocialSharePlugin {
       'linkSource': linkSource,
       'linkTitle': linkTitle,
       'linkThumb': linkThumb,
+      'appName': appName,
     });
   }
 }
