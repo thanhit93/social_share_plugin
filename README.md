@@ -1,8 +1,12 @@
 # social_share_plugin
+```xml
+social_share_plugin:
+    git:
+      url: https://github.com/thanhit93/social_share_plugin.git
+      ref: master
+```
 
-[![Pub](https://img.shields.io/pub/v/social_share_plugin.svg?color=blue)](https://pub.dartlang.org/packages/social_share_plugin)
-
-Social Share to Facebook and Instagram Flutter plugin.
+Social Share to Facebook, Zalo and Instagram Flutter plugin.
 
 ## Getting Started
 
