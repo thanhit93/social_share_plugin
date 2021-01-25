@@ -166,6 +166,40 @@ Once you have the Facebook App ID figured out, then you'll just have to copy-pas
 </array>
 ```
 
+- **edit file AppDelegate.m**
+   ```sh
+      #import <ZaloSDK/ZaloSDK.h>
+      ...
+      - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
+      {
+        ...
+
+        [[ZaloSDK sharedInstance] initializeWithAppId:@"yourappID"];
+
+        return YES;
+      }
+      
+      // add override func
+      - (BOOL)application:(UIApplication *)app openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id>        *)options {
+          return [
+            [ZDKApplicationDelegate sharedInstance]
+            application:app
+            openURL:url
+            sourceApplication:nil
+            annotation:nil
+          ];
+}
+   ```
+   
+   ```
+ - **add URL Type**
+    Main target setting -> info -> URL types -> click +
+    identifier = “zalo”, URL Schemes = “zalo-yourappid”
+    
+ - **add Schemes LSApplicationQueriesSchemes Info.plist**
+    Info.plist -> + LSApplicationQueriesSchemes -> item -> "zalo"
+    ```
+
 Done!
 
 ## How do I use it?
