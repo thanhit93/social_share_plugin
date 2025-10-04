@@ -3,7 +3,7 @@
 social_share_plugin:
     git:
       url: https://github.com/thanhit93/social_share_plugin.git
-      ref: master
+      ref: null_safety
 ```
 
 Social Share to Facebook, Zalo and Instagram Flutter plugin.
