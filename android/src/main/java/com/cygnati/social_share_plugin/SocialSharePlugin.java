@@ -31,8 +31,7 @@ import io.flutter.plugin.common.MethodCall;
 import io.flutter.plugin.common.MethodChannel;
 import io.flutter.plugin.common.MethodChannel.MethodCallHandler;
 import io.flutter.plugin.common.MethodChannel.Result;
-import io.flutter.plugin.common.PluginRegistry;
-import io.flutter.plugin.common.PluginRegistry.Registrar;
+import io.flutter.plugin.common.BinaryMessenger;
 
 import static android.app.Activity.RESULT_CANCELED;
 import static android.app.Activity.RESULT_OK;
@@ -45,7 +44,7 @@ import com.zing.zalo.zalosdk.oauth.ZaloPluginCallback;
  * SocialSharePlugin
  */
 public class SocialSharePlugin
-        implements FlutterPlugin, ActivityAware, MethodCallHandler, PluginRegistry.ActivityResultListener {
+        implements FlutterPlugin, ActivityAware, MethodCallHandler {
     private final static String INSTAGRAM_PACKAGE_NAME = "com.instagram.android";
     private final static String FACEBOOK_PACKAGE_NAME = "com.facebook.katana";
     private final static String TWITTER_PACKAGE_NAME = "com.twitter.android";
@@ -57,51 +56,42 @@ public class SocialSharePlugin
 
     private Activity activity;
     private MethodChannel channel;
-    private final CallbackManager callbackManager;
-
-    public SocialSharePlugin() {
-        this.callbackManager = CallbackManager.Factory.create();
-    }
+    private CallbackManager callbackManager;
 
     @Override
     public void onAttachedToEngine(@NonNull FlutterPluginBinding binding) {
-        this.channel = new MethodChannel(binding.getBinaryMessenger(), "social_share_plugin");
-        channel.setMethodCallHandler(this);
+        onAttachedToEngine(binding.getBinaryMessenger());
     }
 
     @Override
     public void onDetachedFromEngine(@NonNull FlutterPluginBinding binding) {
+        channel.setMethodCallHandler(null);
+    }
+
+    private void onAttachedToEngine(BinaryMessenger messenger) {
+        channel = new MethodChannel(messenger, "social_share_plugin");
+        channel.setMethodCallHandler(this);
+        callbackManager = CallbackManager.Factory.create();
     }
 
     @Override
     public void onAttachedToActivity(@NonNull ActivityPluginBinding binding) {
-        binding.addActivityResultListener(this);
         this.activity = binding.getActivity();
     }
 
     @Override
+    public void onDetachedFromActivity() {
+        this.activity = null;
+    }
+
+    @Override
     public void onDetachedFromActivityForConfigChanges() {
+        this.activity = null;
     }
 
     @Override
     public void onReattachedToActivityForConfigChanges(@NonNull ActivityPluginBinding binding) {
-        binding.removeActivityResultListener(this);
-        binding.addActivityResultListener(this);
-    }
-
-    @Override
-    public void onDetachedFromActivity() {
-    }
-
-    /**
-     * Plugin registration.
-     */
-    public static void registerWith(Registrar registrar) {
-        final MethodChannel channel = new MethodChannel(registrar.messenger(), "social_share_plugin");
-        final SocialSharePlugin plugin = new SocialSharePlugin();
-        plugin.channel = channel;
-        plugin.activity = registrar.activity();
-        channel.setMethodCallHandler(plugin);
+        this.activity = binding.getActivity();
     }
 
     @Override
@@ -135,7 +125,7 @@ public class SocialSharePlugin
     }
 
     @Override
-    public void onMethodCall(@NonNull MethodCall call, @NonNull Result result) {
+    public void onMethodCall(MethodCall call, @NonNull Result result) {
         final PackageManager pm = activity.getPackageManager();
         switch (call.method) {
             case "getPlatformVersion":
