@@ -6,6 +6,9 @@ buildscript {
         google()
         jcenter()
         mavenCentral()
+        maven {
+            url "https://gitlab.com/api/v4/projects/50747855/packages/maven"
+        }
     }
 
     dependencies {
@@ -35,8 +38,8 @@ android {
 
     dependencies {
         implementation 'com.facebook.android:facebook-share:5.15.3'
-        implementation "com.zing.zalo.zalosdk:core:+"
-        implementation "com.zing.zalo.zalosdk:auth:+"
-        implementation "com.zing.zalo.zalosdk:openapi:+"
+        implementation "me.zalo:sdk-core:+"
+        implementation "me.zalo:sdk-auth:+"
+        implementation "me.zalo:sdk-openapi:+"
     }
 }
